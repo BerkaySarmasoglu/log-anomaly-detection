@@ -1,0 +1,25 @@
+# =============================================================================
+# Project: log-anomaly-detection
+# Configuration file — parameters are added incrementally as each phase
+# reaches a resolved decision. No placeholder or null values are recorded
+# for parameters that have not yet been decided; undecided sections are
+# simply absent until the corresponding phase is completed.
+# =============================================================================
+
+project:
+  name: "log-anomaly-detection"
+  dataset: "HDFS_v1"
+  dataset_source: "Loghub (Zenodo record 8196385)"
+  citation: "Xu et al., SOSP 2009; Zhu et al., ISSRE 2023"
+
+reproducibility:
+  random_state: 42  # Fixed across all stochastic operations for reproducibility.
+
+hardware:
+  device: "cpu"  # MPS not used due to unverified PyTorch behavior parity on Apple Silicon
+                 # for this project's model family; consistent with prior projects.
+
+split:
+  strategy: "chronological"
+  # Cutoff timestamps and block-boundary integrity results are recorded here
+  # once Phase 1 (Split Boundary Audit) is completed.
