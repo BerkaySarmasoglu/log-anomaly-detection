@@ -12,6 +12,17 @@ project:
   dataset_source: "Loghub (Zenodo record 8196385)"
   citation: "Xu et al., SOSP 2009; Zhu et al., ISSRE 2023"
 
+paths:
+  raw_dir: "data/raw"
+  interim_dir: "data/interim"
+  processed_dir: "data/processed"
+  models_dir: "outputs/models"
+  metrics_dir: "outputs/metrics"
+  figures_dir: "figures"
+  raw_log: "data/raw/HDFS.log"
+  raw_labels: "data/raw/anomaly_label.csv"
+  archive_zip: "data/raw/HDFS_v1.zip"
+
 reproducibility:
   random_state: 42  # Fixed across all stochastic operations for reproducibility.
 
