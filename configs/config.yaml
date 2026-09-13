@@ -26,6 +26,7 @@ paths:
   block_assignments: "data/interim/block_split_assignments.csv"
   template_dict: "data/interim/drain_template_dictionary.json"
   parsed_events: "data/interim/hdfs_parsed_events.csv"
+  block_lifespans: "data/interim/block_lifespans.csv"
 
 reproducibility:
   random_state: 42  # Fixed across all stochastic operations for reproducibility.
