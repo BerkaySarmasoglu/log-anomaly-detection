@@ -22,6 +22,10 @@ paths:
   raw_log: "data/raw/HDFS.log"
   raw_labels: "data/raw/anomaly_label.csv"
   archive_zip: "data/raw/HDFS_v1.zip"
+  split_boundaries: "data/interim/split_line_boundaries.json"
+  block_assignments: "data/interim/block_split_assignments.csv"
+  template_dict: "data/interim/drain_template_dictionary.json"
+  parsed_events: "data/interim/hdfs_parsed_events.csv"
 
 reproducibility:
   random_state: 42  # Fixed across all stochastic operations for reproducibility.
@@ -31,6 +35,38 @@ hardware:
                  # for this project's model family; consistent with prior projects.
 
 split:
-  strategy: "chronological"
-  # Cutoff timestamps and block-boundary integrity results are recorded here
-  # once Phase 1 (Split Boundary Audit) is completed.
+  strategy: "chronological_block_arrival"
+  target_ratio: [0.70, 0.15, 0.15]
+
+drain:
+  # similarity_threshold: Drain's node-matching acceptance threshold. 0.5 is the
+  # value used in the original Drain paper (He et al., ICWS 2017) and in most
+  # published HDFS benchmarks; retained here as a documented starting point rather
+  # than a blindly copied default, since no HDFS-specific tuning has been performed
+  # against this project's own train/val split yet.
+  similarity_threshold: 0.5
+  # max_depth: depth of the fixed-depth parse tree, excluding the root and leaf
+  # layers. 4 is the standard depth used across HDFS log parsing benchmarks in the
+  # literature (Drain, LogPAI's Loghub benchmark suite); HDFS log lines have a
+  # comparatively short, uniform token structure, so a deeper tree is not expected
+  # to improve template separation and was not tested against this project's data.
+  max_depth: 4
+  oov_policy: "dedicated_token"
+  oov_token: "E_OOV"
+  # Order matters: each pattern is applied sequentially to the message content in
+  # the order listed below. Path masking is listed first so that a full filesystem
+  # path (which itself embeds a block ID, per the duplicate-token pattern
+  # identified in 00_calibration.ipynb Section 0.5) collapses into a single <*>
+  # token in one pass. Applying the block-ID pattern before the path pattern would
+  # partially mask the path from the inside out, leaving structurally inconsistent
+  # remnants around the substituted token and fragmenting otherwise identical
+  # messages into spurious extra templates.
+  regex_patterns:
+    - pattern: "(/[-\\w]+)+"
+      description: "Filesystem path masking (applied first; also absorbs any block ID embedded within a path)"
+    - pattern: "blk_-?\\d+"
+      description: "HDFS block identifier masking for block ID references outside of file paths"
+    - pattern: "(\\d+\\.\\d+\\.\\d+\\.\\d+)(:\\d+)?"
+      description: "IP address and port masking"
+    - pattern: "(?<=\\s)\\d+(?=\\s|$)"
+      description: "Standalone numeric literal masking (applied last, after structured tokens are already masked)"
