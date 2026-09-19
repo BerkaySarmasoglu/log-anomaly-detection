@@ -1,0 +1,21 @@
+{
+  "model": "Sequence LSTM",
+  "pre_registered_threshold": 0.9540464282035828,
+  "sealed_metrics": {
+    "pr_auc": 0.9960050369179898,
+    "f1_score": 0.9923664122137404,
+    "precision": 0.9945994599459946,
+    "recall": 0.9901433691756273,
+    "roc_auc": 0.9999586822035051
+  },
+  "test_distribution": {
+    "total_blocks": 86259,
+    "anomalous_blocks": 1116,
+    "anomaly_rate_pct": 1.29377804055229
+  },
+  "inference_wall_clock_sec": 2.631060838699341,
+  "diagnostic_post_hoc": {
+    "optimal_threshold": 0.942767858505249,
+    "optimal_f1": 0.9928186714042192
+  }
+}
