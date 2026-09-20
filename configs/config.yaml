@@ -71,3 +71,25 @@ drain:
       description: "IP address and port masking"
     - pattern: "(?<=\\s)\\d+(?=\\s|$)"
       description: "Standalone numeric literal masking (applied last, after structured tokens are already masked)"
+
+random_forest:
+  n_estimators: 100
+  max_depth: 15
+  class_weight: "balanced"  # cost-sensitive weighting for ~3.2% train positive rate
+  n_jobs: -1
+  # random_state inherited from reproducibility.random_state
+
+lstm:
+  embedding_dim: 16
+  hidden_dim: 32
+  num_layers: 1
+  dropout: 0.0  # not applicable — nn.LSTM's dropout param only takes effect for num_layers > 1
+  max_seq_len: 50  # covers 99.99% of censored sequences (P99=32, per 04_feature_engineering.ipynb 4.3)
+  batch_size: 512
+  optimizer: "AdamW"
+  learning_rate: 0.002
+  loss: "BCEWithLogitsLoss(pos_weight)"
+  pos_weight: 29.69  # N_neg/N_pos computed on train only, per Decision 5.2 item 4
+  epochs: 4
+  early_stopping: false  # fixed epoch count, no early stopping was used
+  # random_state inherited from reproducibility.random_state
